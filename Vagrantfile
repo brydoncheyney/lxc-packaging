@@ -3,7 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "fgrehm/centos-6-64-lxc"
+  config.vm.box = 'fgrehm/centos-6-64-lxc'
 
   config.ssh.insert_key = false
 
@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.scope = :box
   end
 
-  config.vm.define 'ruby' do |instance|
+  config.vm.define 'default' do |instance|
     if Vagrant.has_plugin?('vagrant-hosts')
       instance.vm.provision :hosts
     end
@@ -30,10 +30,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       rvm use 2.1.10 --default
     SHELL
 
-    instance.vm.provision 'shell', inline: <<-SHELL
-      # install janus
-      curl -L https://bit.ly/janus-bootstrap | bash
-    SHELL
+    instance.vm.provision 'shell' do |shell|
+      shell.privileged = false
+      shell.inline = 'curl -L https://bit.ly/janus-bootstrap | bash'
+    end
 
   end
   
