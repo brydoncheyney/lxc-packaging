@@ -16,9 +16,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       instance.vm.provision :hosts
     end
 
-    instance.vm.provision 'shell', inline: <<-SHELL
-      # install git
-      sudo yum install -y git
+    # update base centos image to latest version
+    instance.vm.provision 'shell', inline: <<-UPDATE
+      sudo yum update -y
+    UPDATE
+
+    # install latest ruby
+    instance.vm.provision 'shell', inline: <<-RUBY
       # install (the many) dependencies necessary for ruby install
       sudo yum install -y gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison iconv-devel sqlite-devel tar
       # install rvm
@@ -28,12 +32,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # $profit$
       rvm install 2.1.10
       rvm use 2.1.10 --default
-    SHELL
+    RUBY
 
-    instance.vm.provision 'shell' do |shell|
-      shell.privileged = false
-      shell.inline = 'curl -L https://bit.ly/janus-bootstrap | bash'
-    end
+    # install janus - vi distribution
+    instance.vm.provision 'shell', inline: <<-VI
+      sudo yum install -y git
+      curl -L https://bit.ly/janus-bootstrap | bash
+    VI
 
   end
   
